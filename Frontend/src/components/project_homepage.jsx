@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
 import '../css/project_homepage.css';
+import { callApi } from '../api';
 
 export class ProjectHomepage extends Component {
-  // Show the Sign In popup
+  constructor(){
+    super();
+    this.userRegistration = this.userRegistration.bind(this);
+  }
+  
   showSignIn() {
     let popup = document.getElementById("popup");
     let signin = document.getElementById("signin");
@@ -34,6 +39,78 @@ export class ProjectHomepage extends Component {
       let popup = document.getElementById("popup");
       popup.style.display = "none";
     }
+  }
+
+  userRegistration()
+  {
+        let fullname = document.getElementById("fullname");
+        let email = document.getElementById("email");
+        let role = document.getElementById("role");
+        let  signuppassword = document.getElementById("signuppassword");
+        let confirmpassword = document.getElementById("confirmpassword");
+        fullname.style.border = "";
+        email.style.border = "";
+        role.style.border = "";
+        signuppassword.style.border = "";
+        confirmpassword.style.border = "";
+        if(fullname.value=="")
+        {
+          fullname.style.border = "1px solid red";
+          fullname.focus();
+          return;
+        }
+        if(email.value=="")
+          {
+            email.style.border = "1px solid red";
+            email.focus();
+            return;
+          }
+          if(role.value=="")
+            {
+              role.style.border = "1px solid red";
+              role.focus();
+              return;
+            }
+            if(signuppassword.value=="")
+              {
+                signuppassword.style.border = "1px solid red";
+                signuppassword.focus();
+                return;
+              }
+              if(confirmpassword.value=="")
+                {
+                  confirmpassword.style.border = "1px solid red";
+                  confirmpassword.focus();
+                  return;
+                }
+                if(signuppassword.value !== confirmpassword.value)
+                {
+                  signuppassword.style.border = "1px solid red";
+                  signuppassword.focus();
+                  return;
+                }
+
+  
+
+
+        var data = JSON.stringify({
+              fullname : fullname.value,
+              email : email.value,
+              role : role.value,
+              password : signuppassword.value
+        })
+        callApi("POST", "http://localhost:8080/users/signup", data, this.getResponse)
+  }
+  getResponse(res){
+    let resp = res.split('::');
+    alert(resp[1]);
+    if (resp[0] === "200")
+      {
+          let signin = document.getElementById("signin");
+          let signup = document.getElementById("signup");
+          signin.style.display = "block";
+          signup.style.display = "none";
+      }
   }
 
   render() {
@@ -73,8 +150,10 @@ export class ProjectHomepage extends Component {
               <option value='3'>Job Seeker</option>
             </select>
               <label className="passwordLabel">New Password:</label>
-              <input type="password" id="newPassword" placeholder="Create your password" />
-              <button className="signUpButton">REGISTER</button>
+              <input type="password" id="signuppassword" placeholder="Create Your Password" />
+              <label className="passwordLabel">Confirm Password:</label>
+              <input type="password" id="confirmpassword" placeholder="Confirm Password" />
+              <button onClick={this.userRegistration} className="signUpButton">REGISTER</button>
               <div className="div2">
                 Already have an account?{" "}
                 <label onClick={() => this.showSignIn()}>Sign In</label>
